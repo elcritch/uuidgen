@@ -14,43 +14,47 @@
 - 🧪 Thoroughly tested and ready for production use
 
 ## uuigen API Reference
-
 ```nim
-# UUID Construction
-proc initUuid(high: uint64, low: uint64): Uuid
-proc getHighLow(uuid: Uuid): tuple[high, low: uint64]
+# UUID type & exceptions
+type
+  Uuid* = array[0..15, byte]
+  InvalidUuid* = object of ValueError
 
-# Parsing
-proc parseStr(str: string): Uuid  # supports 36, 38 (braced), 45 (URN) formats
-# raises InvalidUuid on failure
+# Construction & conversion
+proc initUuid*(high, low: uint64): Uuid
+proc getHighLow*(id: Uuid): (high: uint64, low: uint64)
 
-# Formatting
-proc `$`(uuid: Uuid): string  # to standard 36-char hyphenated string
+# Parsing & formatting
+proc parseStr*(input: string): Uuid              # Supports 32, 36, 38 (braced), 45 (URN) length inputs
+proc `$`*(id: Uuid): string                      # Formats UUID to hyphenated lowercase string
 
 # Inspection
-proc getVersionNum(uuid: Uuid): int
-proc isZero(uuid: Uuid): bool
-proc isMax(uuid: Uuid): bool
+proc getVersionNum*(id: Uuid): int
+proc getVersion*(id: Uuid): Option[UuidVersion]
+proc isZero*(id: Uuid): bool
+proc isMax*(id: Uuid): bool
 
 # Generation
-proc newUuidv1(timestamp: Time, node: array[6, byte]): Uuid
-proc newUuidv3(namespace: Uuid, name: seq[byte]): Uuid
-proc newUuidv4(): Uuid
-proc newUuidv5(namespace: Uuid, name: seq[byte]): Uuid
-proc newUuidv6(timestamp: Time, node: array[6, byte]): Uuid
-proc newUuidv7(timestamp: Time): Uuid
-proc nowUuidv7(): Uuid
-proc newUuidv8(data: array[16, byte]): Uuid
+proc newUuidv1*(timestamp: Time, node: array[6, byte]): Uuid
+proc nowUuidv1*(): Uuid
+proc newUuidv3*(namespace: Uuid, name: seq[byte]): Uuid
+proc newUuidv4*(): Uuid
+proc newUuidv5*(namespace: Uuid, name: seq[byte]): Uuid
+proc newUuidv6*(timestamp: Time, node: array[6, byte]): Uuid
+proc newUuidv7*(timestamp: Time): Uuid
+proc nowUuidv7*(): Uuid
+proc newUuidv8*(data: array[16, byte]): Uuid
 
 # Constants
 const
-  NAMESPACE_DNS: Uuid
-  NAMESPACE_URL: Uuid
-  NAMESPACE_OID: Uuid
-  NAMESPACE_X500: Uuid
+  NAMESPACE_DNS*: Uuid
+  NAMESPACE_URL*: Uuid
+  NAMESPACE_OID*: Uuid
+  NAMESPACE_X500*: Uuid
 
 # Exceptions
-type InvalidUuid = object of ValueError
+type
+  InvalidUuid* = object of ValueError
 
 # Usage Example
 import uuigen
