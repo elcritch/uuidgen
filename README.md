@@ -1,6 +1,6 @@
-# uuigen 🧬 – UUID Generation & Parsing for Nim
+# uuidgen 🧬 – UUID Generation & Parsing for Nim
 
-**uuigen** is a comprehensive and standards-compliant UUID library for the Nim programming language. It supports generating, parsing, formatting, and inspecting UUIDs of all major versions, including newer drafts like UUIDv6, v7, and v8.
+**uuidgen** is a comprehensive and standards-compliant UUID library for the Nim programming language. It supports generating, parsing, formatting, and inspecting UUIDs of all major versions, including newer drafts like UUIDv6, v7, and v8.
 
 ---
 
