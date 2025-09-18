@@ -17,7 +17,7 @@ proc getTimestamp100ns(dt: DateTime): uint64 =
 
   result = nanosecondTicks + UUID_TICKS_BETWEEN_EPOCHS
 
-proc getDateTime*[T: Uuid](id: T): Option[DateTime] =
+proc getTime*[T: Uuid](id: T): Option[Time] =
   ## Convert UUID time to UTC DateTime
   let versionOpt = id.getVersion()
   if versionOpt.isSome():
@@ -27,24 +27,18 @@ proc getDateTime*[T: Uuid](id: T): Option[DateTime] =
       let timeHigh = (timeBits shr 16) and 0xFFFF_FFFF_FFFF'u64
       let timeLow  =  timeBits         and 0x0FFF'u64
       let gregorianTicks = (timeHigh shl 12) or timeLow
-
       let ticks: int64 = cast[int64](gregorianTicks - UUID_TICKS_BETWEEN_EPOCHS)
       let secs = ticks div 10_000_000'i64
       let remNs = (ticks - secs * 10_000_000'i64) * 100'i64
-
-      let t = fromUnix(secs) + initDuration(nanoseconds = remNs)
-      some(t.utc())
-
+      some(initTime(secs, remNs))
     of UuidVersion.vSortRand:
       # UUIDv7 stores Unix epoch milliseconds in the first 48 bits
       let timeBits = id.getHighBits()
       let unixMs = (timeBits shr 16) and 0xFFFF_FFFF_FFFF'u64
-
       let secs = int64(unixMs div 1000'u64)
       let remMs = int64(unixMs mod 1000'u64)
-      let t = fromUnix(secs) + initDuration(milliseconds = remMs)
-      some(t.utc())
+      some(initTime(secs, remMs))
     else:
-      none(DateTime)
+      none(Time)
   else:
-    none(DateTime)
+    none(Time)

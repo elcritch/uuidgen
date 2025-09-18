@@ -155,7 +155,7 @@ suite "UUIDv6 Tests":
     check uuid.len == 16
 
     check nodeId == uuid.getNodeId().get()
-    check now == uuid.getDateTime().get()
+    check now == uuid.getTime().get().utc()
 
   test "UUIDv6 uniqueness check":
     let now = now()
@@ -171,7 +171,7 @@ suite "newUuidv7 Tests":
     let uuid = newUuidv7(timestamp)
     let uuidStr = $uuid
     check(uuidStr.startsWith("017f22e2-79b0-7"))
-    check timestamp == uuid.getDateTime().get().toTime()
+    check timestamp == uuid.getTime().get()
     
   test "Correct Timestamp Encoding":
     var uuid = nowUuidv7()
