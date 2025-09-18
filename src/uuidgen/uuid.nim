@@ -1,4 +1,4 @@
-import std/[options, strutils, sequtils]
+import std/[options, strutils, sequtils, times]
 
 type 
   Uuid* = array[0..15, byte]

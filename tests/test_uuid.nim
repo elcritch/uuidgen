@@ -3,6 +3,7 @@ import uuidgen
 import times
 import sequtils
 import strutils
+import options
 
 test "round-trip conversion between two uint64s and Uuid":
   let originalHigh: uint64 = 0x123456789ABCDEF0'u64
@@ -152,6 +153,9 @@ suite "UUIDv6 Tests":
     let nodeId = [byte 0x00, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E]
     let uuid = newUuidv6(now, nodeId)
     check uuid.len == 16
+
+    check nodeId == uuid.getNodeId().get()
+    check now == uuid.getDateTime().get()
 
   test "UUIDv6 uniqueness check":
     let now = now()
