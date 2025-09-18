@@ -18,7 +18,7 @@ proc getTimestamp100ns(dt: DateTime): uint64 =
   result = nanosecondTicks + UUID_TICKS_BETWEEN_EPOCHS
 
 proc getTime*[T: Uuid](id: T): Option[Time] =
-  ## Convert UUID time to UTC DateTime
+  ## Convert UUID time to Nim Time
   let versionOpt = id.getVersion()
   if versionOpt.isSome():
     case versionOpt.get(): 
