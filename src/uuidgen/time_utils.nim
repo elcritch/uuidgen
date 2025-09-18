@@ -24,22 +24,13 @@ proc getDateTime*[T: Uuid](id: T): Option[DateTime] =
     case versionOpt.get(): 
     of UuidVersion.vSortMac:
       let timeBits = id.getHighBits()
-      # UUIDv6 time layout in the high 64 bits:
-      # [0..31]=timeHigh, [32..47]=timeMid, [48..51]=version, [52..63]=timeLow (12 bits)
-      # Reconstruct 60-bit tick count (100ns units since 1582-10-15).
-      let timeHigh = (timeBits shr 32) and 0xFFFF_FFFF'u64
-      let timeMid  = (timeBits shr 16) and 0xFFFF'u64
+      let timeHigh = (timeBits shr 16) and 0xFFFF_FFFF_FFFF'u64
       let timeLow  =  timeBits         and 0x0FFF'u64
-      let ticks = (timeHigh shl 28) or (timeMid shl 12) or timeLow
+      let gregorianTicks = (timeHigh shl 12) or timeLow
 
-      let diff: int64 =
-        (if ticks >= UUID_TICKS_BETWEEN_EPOCHS:
-          int64(ticks - UUID_TICKS_BETWEEN_EPOCHS)
-        else:
-          -int64(UUID_TICKS_BETWEEN_EPOCHS - ticks))
-      let secs = diff div 10_000_000'i64
-      let remTicks = diff - secs * 10_000_000'i64
-      let remNs = remTicks * 100'i64
+      let ticks: int64 = cast[int64](gregorianTicks - UUID_TICKS_BETWEEN_EPOCHS)
+      let secs = ticks div 10_000_000'i64
+      let remNs = (ticks - secs * 10_000_000'i64) * 100'i64
 
       let t = fromUnix(secs) + initDuration(nanoseconds = remNs)
       some(t.utc())
