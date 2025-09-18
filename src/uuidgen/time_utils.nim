@@ -36,7 +36,14 @@ proc getDateTime*[T: Uuid](id: T): Option[DateTime] =
       some(t.utc())
 
     of UuidVersion.vSortRand:
-      none(DateTime)
+      # UUIDv7 stores Unix epoch milliseconds in the first 48 bits
+      let timeBits = id.getHighBits()
+      let unixMs = (timeBits shr 16) and 0xFFFF_FFFF_FFFF'u64
+
+      let secs = int64(unixMs div 1000'u64)
+      let remMs = int64(unixMs mod 1000'u64)
+      let t = fromUnix(secs) + initDuration(milliseconds = remMs)
+      some(t.utc())
     else:
       none(DateTime)
   else:
